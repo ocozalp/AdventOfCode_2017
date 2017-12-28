@@ -1,19 +1,13 @@
 def get_max_index(arr):
-    mval = -100
-    res = -1
-    for i, num in enumerate(arr):
-        if num > mval:
-            res = i
-            mval = num
+    return -max([(num, -i) for i, num in enumerate(arr)])[1]
 
-    return res
 
 def redistribute(numbers, ind):
     n = len(numbers)
     dval = numbers[ind]
     numbers[ind] = 0
     min_val = dval // n
-    plus_one_count = dval - min_val*n
+    plus_one_count = dval - min_val * n
 
     current = (ind+1) % n
     for i in xrange(n):
@@ -26,26 +20,50 @@ def redistribute(numbers, ind):
 
     return numbers
 
-def hash(numbers):
+
+def hash_numbers(numbers):
     return '-'.join(map(str, numbers))
 
-def solve(numbers):
+
+def part1(numbers):
     seen = set()
-    seen.add(hash(numbers))
+    seen.add(hash_numbers(numbers))
 
     count = 0
     while True:
         max_ind = get_max_index(numbers)
         numbers = redistribute(numbers, max_ind)
-        h = hash(numbers)
+        h = hash_numbers(numbers)
         count += 1
         if h in seen:
             break
         seen.add(h)
 
-    return count
+    return len(seen)
 
-with open('day6.txt', 'r') as f:
-    numbers = map(int, f.readlines()[0][:-1].split())
-    res = solve(numbers)
-    print res
+
+def part2(numbers):
+    seen = dict()
+    seen[hash_numbers(numbers)] = 0
+
+    count = 0
+    while True:
+        max_ind = get_max_index(numbers)
+        numbers = redistribute(numbers, max_ind)
+        h = hash_numbers(numbers)
+        count += 1
+        if h in seen:
+            return count - seen[h]
+        seen[h] = count
+
+
+def main():
+    with open('input/day6.txt', 'r') as f:
+        numbers = map(int, f.readlines()[0][:-1].split())
+
+    print 'Part 1: ', part1(list(numbers))
+    print 'Part 2: ', part2(list(numbers))
+
+
+if __name__ == '__main__':
+    main()
